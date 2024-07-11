@@ -28,7 +28,7 @@ pipeline {
         stage('Package') {
             input{
                 message "select the version to deploy"
-                OK "version selected"
+                ok "version selected"
                 parameters{
                     choice{name:'NewAPP',choices:['1.1','1.2','1.3']}
                 }
