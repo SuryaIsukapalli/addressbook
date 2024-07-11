@@ -15,12 +15,14 @@ pipeline {
 
     stages {
         stage('Compile') {
+            agent any
             steps {
                 echo "Compiling the code in ${params.Env}"
                 sh "mvn compile"
             }
         }
         stage('Unitest') {
+            agent any
             when{
                 expression{
                     params.executeTests == true
