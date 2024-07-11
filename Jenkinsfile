@@ -30,7 +30,7 @@ pipeline {
             }
             steps {
                 echo 'Testing the code'
-                sh "mnv test"
+                sh "mvn test"
             }
         }
         stage('Package') {
