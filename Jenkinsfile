@@ -29,8 +29,8 @@ pipeline {
             input{
                 message "select the version to deploy"
                 ok "version selected"
-                parameters{
-                    choice{name:'NEWAPP',choices:['1.1','1.2','1.3']}
+                parameters {
+                    choice(name: 'NEWAPP', choices: ['1.1', '1.2', '1.3'])
                 }
             }
             steps {
