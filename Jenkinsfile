@@ -37,7 +37,7 @@ pipeline {
                 sshagent(['slave2']) {
                 echo 'Testing the code'
                sh "scp -o StrictHostKeyChecking=no server-script.sh ${DEV_SERVER}:/home/ec2-user"
-               sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} bash ~/server-script.sh"
+               sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} 'bash ~/server-script.sh'"
             }
             }    
             }
