@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent none
+
+    tools{
+        maven 'mymaven'
+    }
 
     parameters{
          
@@ -13,6 +17,7 @@ pipeline {
         stage('Compile') {
             steps {
                 echo "Compiling the code in ${params.Env}"
+                sh "mvn compile"
             }
         }
         stage('Unitest') {
@@ -23,9 +28,11 @@ pipeline {
             }
             steps {
                 echo 'Testing the code'
+                sh "mnv test"
             }
         }
         stage('Package') {
+            agent {label 'linux_slave'}
             input{
                 message "select the version to deploy"
                 ok "version selected"
@@ -35,6 +42,7 @@ pipeline {
             }
             steps {
                 echo "Packing the code ${params.APPVERSION}"
+                sh "mvn package"
             }
         }
         
