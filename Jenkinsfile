@@ -30,7 +30,7 @@ pipeline {
                 message "select the version to deploy"
                 ok "version selected"
                 parameters{
-                    choice{name:'NewAPP',choices:['1.1','1.2','1.3']}
+                    choice{name:'NEWAPP',choices:['1.1','1.2','1.3']}
                 }
             }
             steps {
