@@ -55,5 +55,21 @@ pipeline {
                 }
             }
         }
+        stage('Deploy the docker image') {
+            agent any
+            steps {
+                script {
+                    sshagent(['slave2']) {
+                        withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                            echo "Run the docker container"
+                            sh "ssh -o StrictHostKeyChecking=no server-script.sh ${DEPLOY_SERVER} sudo yum install docker -y"
+                            sh "ssh ${DEPLOY_SERVER} sudo systemctl start docker"
+                            sh "ssh ${DEPLOY_SERVER} sudo docker login -u ${USERNAME} -p ${PASSWORD}"
+                            sh "ssh ${DEPLOY_SERVER} sudo docker run -itd -P ${IMAGE_NAME}"
+                        }
+                    }
+                }
+            }
+        }
     }
 }
