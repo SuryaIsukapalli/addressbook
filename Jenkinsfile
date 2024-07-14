@@ -13,7 +13,7 @@ pipeline {
     
     }
     environment{
-        DEV_SERVER='ec2-user@172.31.40.95'
+        DEV_SERVER='ec2-user@172.31.44.224'
         IMAGE_NAME='isukapallisurya/surya:$BUILD_NUMBER'
         DEPLOY_SERVER='ec2-user@172.31.33.214'
 
