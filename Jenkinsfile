@@ -14,6 +14,8 @@ pipeline {
     }
     environment{
         DEV_SERVER='ec2-user@172.31.40.95'
+        IMAGE_NAME='isukapallisurya/surya:$BUILD_NUMBER'
+        DEPLOY_SERVER='ec2-user@172.31.33.214'
 
     }
 
@@ -25,7 +27,7 @@ pipeline {
                 sh "mvn compile"
             }
         }
-        stage('Unitest') {
+        stage('Unit Test') {
             agent any
             when{
                 expression{
@@ -34,26 +36,26 @@ pipeline {
             }
             steps {
                 script{
-                sshagent(['slave2']) {
+                
                 echo 'Testing the code'
-               sh "scp -o StrictHostKeyChecking=no server-script.sh ${DEV_SERVER}:/home/ec2-user"
-               sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} 'bash ~/server-script.sh'"
+                sh "mvn test"
+               
             }
             }    
-            }
         }
-        stage('Package') {
-            agent {label 'linux_slave'}
-            input{
-                message "select the version to deploy"
-                ok "version selected"
-                parameters {
-                    choice(name: 'NEWAPP', choices: ['1.1', '1.2', '1.3'])
-                }
-            }
+        stage('Dockerize and push the image') {
+            agent any
             steps {
+                script{
+                sshagent(['slave2']) {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'password', usernameVariable: 'username')]) {
                 echo "Packing the code ${params.APPVERSION}"
-                sh "mvn package"
+                sh "scp -o StrictHostKeyChecking=no server-script.sh ${DEV_SERVER}:/home/ec2-user"
+               sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} /home/ec2-user/server-script.sh ${IMAGE_NAME}"
+               sh "ssh ${DEV_SERVER} sudo docker login -u ${USERNAME} -p ${PASSWORD}"
+               sh "ssh ${DEV_SERVER} sudo docker login -u ${USERNAME} -p ${PASSWORD}"
+            }
+            }
             }
         }
         
