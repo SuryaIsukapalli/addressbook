@@ -1,18 +1,20 @@
 #! /bin/bash
 
 sudo yum install git -y
-sudo yum install java-1.8.0-openjdk-devel -y
-sudo yum install maven -y
+# sudo yum install java-1.8.0-openjdk-devel -y
+# sudo yum install maven -y
+sudo yum install docker -y 
+sudo systemctl start docker
 
 if [-d "addressbook"]
 then
   echo "repo is cloned and exsists"
   cd addressbook
-  git pull origin jenkins-pipeline
+  git pull origin ci/cd-docker
 else
   git clone https://github.com/SuryaIsukapalli/addressbook.git
-  git checkout jenkins-pipeline
   cd addressbook
+  git checkout ci/cd-docker
 fi
 
-mvn test
+sudo docker build -t $1 .
