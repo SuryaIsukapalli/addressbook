@@ -12,7 +12,7 @@ pipeline {
     }
 
     environment {
-        DEV_SERVER='ec2-user@13.48.30.188'
+        DEV_SERVER='ec2-user@172.31.42.3'
         IMAGE_NAME='isukapallisurya/surya:$BUILD_NUMBER'
         DEPLOY_SERVER='ec2-user@172.31.33.214'
     }
@@ -36,6 +36,7 @@ pipeline {
                 echo 'Test the Code'
                 sh "mvn test"
             }
+
         }
 
         stage('Dockerize and push the image') {

@@ -6,7 +6,7 @@ sudo yum install git -y
 sudo yum install docker -y 
 sudo systemctl start docker
 
-if [-d "addressbook"]
+if [ -d "addressbook"]
 then
   echo "repo is cloned and exsists"
   cd addressbook
