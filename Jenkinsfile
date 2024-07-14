@@ -1,66 +1,58 @@
 pipeline {
     agent none
 
-    tools{
+    tools {
         maven 'mymaven'
     }
 
-    parameters{
-         
-        string(name:'Env',defaultValue:'Test',description:'version to deploy')
-        booleanParam(name:'executeTests',defaultValue: true,description:'decide to run tc')
-        choice(name:'APPVERSION',choices:['1.1','1.2','1.3'])
-    
+    parameters {
+        string(name: 'Env', defaultValue: 'Test', description: 'version to deploy')
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'decide to run tc')
+        choice(name: 'APPVERSION', choices: ['1.1', '1.2', '1.3'])
     }
-    environment{
+
+    environment {
         DEV_SERVER='ec2-user@13.48.30.188'
         IMAGE_NAME='isukapallisurya/surya:$BUILD_NUMBER'
         DEPLOY_SERVER='ec2-user@172.31.33.214'
-
     }
 
     stages {
         stage('Compile') {
             agent any
             steps {
-                echo "Compiling the code in ${params.Env}"
+                echo "Compiling the Code in ${params.Env}"
                 sh "mvn compile"
             }
         }
-        stage('Unit Test') {
+        stage('UnitTest') {
             agent any
-            when{
-                expression{
+            when {
+                expression {
                     params.executeTests == true
                 }
             }
             steps {
-                script{
-                
-                echo 'Testing the code'
+                echo 'Test the Code'
                 sh "mvn test"
-               
             }
-            }    
         }
+
         stage('Dockerize and push the image') {
             agent any
             steps {
-                script{
-                sshagent(['slave2']) {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'password', usernameVariable: 'username')]) {
-                echo "Packing the code ${params.APPVERSION}"
-                sh "scp -o StrictHostKeyChecking=no server-script.sh ${DEV_SERVER}:/home/ec2-user"
-                // sh "ssh ${DEV_SERVER} chmod +x /home/ec2-user/server-script.sh"
-               sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} /home/ec2-user/server-script.sh ${IMAGE_NAME}"
-               sh "ssh ${DEV_SERVER} sudo docker login -u ${USERNAME} -p ${PASSWORD}"
-               sh "ssh ${DEV_SERVER} sudo docker push ${IMAGE_NAME}"
-            }
-            }
+                script {
+                    sshagent(['slave2']) {
+                        withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                            echo "Dockerize the Code ${params.APPVERSION}"
+                            sh "scp -o StrictHostKeyChecking=no server-script.sh ${DEV_SERVER}:/home/ec2-user"
+                            sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} bash /home/ec2-user/server-script.sh ${IMAGE_NAME}"
+                            sh "ssh ${DEV_SERVER} sudo docker login -u ${USERNAME} -p ${PASSWORD}"
+                            sh "ssh ${DEV_SERVER} sudo docker push ${IMAGE_NAME}"
+                        }
+                    }
+                }
             }
         }
-        
     }
-    
-}
 }
