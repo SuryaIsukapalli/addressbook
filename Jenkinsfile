@@ -51,7 +51,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'password', usernameVariable: 'username')]) {
                 echo "Packing the code ${params.APPVERSION}"
                 sh "scp -o StrictHostKeyChecking=no server-script.sh ${DEV_SERVER}:/home/ec2-user"
-                sh "ssh ${DEV_SERVER} chmod +x /home/ec2-user/server-script.sh"
+                // sh "ssh ${DEV_SERVER} chmod +x /home/ec2-user/server-script.sh"
                sh "ssh -o StrictHostKeyChecking=no ${DEV_SERVER} /home/ec2-user/server-script.sh ${IMAGE_NAME}"
                sh "ssh ${DEV_SERVER} sudo docker login -u ${USERNAME} -p ${PASSWORD}"
                sh "ssh ${DEV_SERVER} sudo docker push ${IMAGE_NAME}"
